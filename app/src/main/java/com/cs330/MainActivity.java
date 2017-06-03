@@ -1,13 +1,16 @@
 package com.cs330;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.cs330.util.DbAdapter;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.vision.barcode.Barcode;
 
@@ -22,10 +25,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final int RC_BARCODE_CAPTURE = 9001;
     private static final String TAG = "BarcodeMain";
 
+    final DbAdapter db = new DbAdapter(this);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+//        DbAdapter db = new DbAdapter(this);
+//        db.open();
+//        db.insertBarcode("123");
+//        db.insertBarcode("123");
+//        db.insertBarcode("123");
+//        db.insertBarcode("123");
+//        db.close();
 
         statusMessage = (TextView)findViewById(R.id.status_message);
         barcodeValue = (TextView)findViewById(R.id.barcode_value);
@@ -46,6 +59,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             startActivityForResult(intent, RC_BARCODE_CAPTURE);
         }
+    }
+
+    public void showAllBarcodes(View v){
+        db.open();
+        Cursor c = db.getAllBarcodes();
+        if (c.moveToFirst()) {
+            do {
+                displayBarcode(c);
+            } while (c.moveToNext());
+        }
+        db.close();
+    }
+
+    public void displayBarcode(Cursor cursor) {
+        Toast.makeText(this, "ID: " + cursor.getString(0) + "\n" + "Barcode: " + cursor.getString(1), Toast.LENGTH_LONG).show();
     }
 
     /**
@@ -72,12 +100,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+       // DbAdapter db = new DbAdapter(this);
+
         if (requestCode == RC_BARCODE_CAPTURE) {
             if (resultCode == CommonStatusCodes.SUCCESS) {
                 if (data != null) {
                     Barcode barcode = data.getParcelableExtra(BarcodeCaptureActivity.BarcodeObject);
                     statusMessage.setText(R.string.barcode_success);
                     barcodeValue.setText(barcode.displayValue);
+                    db.open();
+                    db.insertBarcode(barcode.displayValue);
+                    db.close();
                     Log.d(TAG, "Barcode read: " + barcode.displayValue);
                 } else {
                     statusMessage.setText(R.string.barcode_failure);

@@ -61,4 +61,13 @@
         android:layout_alignParentEnd="true"
         android:checked="false" />
 
+    <Button
+        android:text="@string/showAll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/status_message"
+        android:layout_centerHorizontal="true"
+        android:onClick="showAllBarcodes"
+        android:id="@+id/button2" />
+
 </RelativeLayout>
