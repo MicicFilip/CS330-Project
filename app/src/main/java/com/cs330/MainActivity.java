@@ -32,13 +32,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-//        DbAdapter db = new DbAdapter(this);
-//        db.open();
-//        db.insertBarcode("123");
-//        db.insertBarcode("123");
-//        db.insertBarcode("123");
-//        db.insertBarcode("123");
-//        db.close();
 
         statusMessage = (TextView)findViewById(R.id.status_message);
         barcodeValue = (TextView)findViewById(R.id.barcode_value);
@@ -68,6 +61,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             do {
                 displayBarcode(c);
             } while (c.moveToNext());
+        } else {
+            Toast.makeText(this, "Nema barcode-ova u bazi", Toast.LENGTH_LONG).show();
         }
         db.close();
     }
